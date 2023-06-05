@@ -83,6 +83,34 @@ resource "aws_ssm_parameter" "mq_application_password" {
   tags        = module.this.tags
 }
 
+  
+  
+  
+resource "aws_security_group" "mq_broker" {
+  name        = "mq-broker-security-group"
+  description = "Security group for MQ broker"
+  vpc_id      = var.vpc_id
+
+  ingress {
+    from_port   = 5672
+    to_port     = 5672
+    protocol    = "tcp"
+    cidr_blocks = var.allowed_cidr_blocks
+    security_groups = var.allowed_security_groups
+
+  }
+
+
+  tags = {
+    Name = "mq-broker-security-group"
+  }
+}
+
+  
+  
+
+  
+  
 resource "aws_mq_broker" "default" {
   count                      = local.enabled ? 1 : 0
   broker_name                = module.this.id
@@ -96,7 +124,7 @@ resource "aws_mq_broker" "default" {
   subnet_ids                 = var.subnet_ids
   tags                       = module.this.tags
 
-  security_groups            = var.security_groups
+  security_groups            = [aws_security_group.mq_broker.id]
     
   dynamic "encryption_options" {
     for_each = var.encryption_enabled ? ["true"] : []
