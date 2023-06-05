@@ -183,10 +183,6 @@ variable "allowed_ingress_ports" {
 }
 
 
-variable "security_groups" {
-  type        = list(string)
-  description = "List of Security Groups"
-}
 
 variable "allowed_security_groups" {
   type    = list(string)
