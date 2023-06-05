@@ -82,8 +82,3 @@ output "admin_username" {
   value       = local.mq_admin_user
   description = "AmazonMQ admin username"
 }
-
-output "application_username" {
-  value       = local.mq_application_user
-  description = "AmazonMQ application username"
-}
