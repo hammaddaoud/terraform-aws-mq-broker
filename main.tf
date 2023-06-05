@@ -9,12 +9,6 @@ locals {
   mq_admin_password_needed = local.mq_admin_user_enabled && length(var.mq_admin_password) == 0
   mq_admin_password        = local.mq_admin_password_needed ? random_password.mq_admin_password[0].result : try(var.mq_admin_password[0], "")
 
-  mq_application_user_needed = local.enabled && length(var.mq_application_user) == 0
-  mq_application_user        = local.mq_application_user_needed ? random_pet.mq_application_user[0].id : try(var.mq_application_user[0], "")
-
-  mq_application_password_needed = local.enabled && length(var.mq_application_password) == 0
-  mq_application_password        = local.mq_application_password_needed ? random_password.mq_application_password[0].result : try(var.mq_application_password[0], "")
-
 
 }
 
@@ -26,18 +20,6 @@ resource "random_pet" "mq_admin_user" {
 
 resource "random_password" "mq_admin_password" {
   count   = local.mq_admin_password_needed ? 1 : 0
-  length  = 24
-  special = false
-}
-
-resource "random_pet" "mq_application_user" {
-  count     = local.mq_application_user_needed ? 1 : 0
-  length    = 2
-  separator = "-"
-}
-
-resource "random_password" "mq_application_password" {
-  count   = local.mq_application_password_needed ? 1 : 0
   length  = 24
   special = false
 }
@@ -57,27 +39,6 @@ resource "aws_ssm_parameter" "mq_master_password" {
   name        = format(var.ssm_parameter_name_format, var.ssm_path, var.mq_admin_password_ssm_parameter_name)
   value       = local.mq_admin_password
   description = "MQ Password for the admin user"
-  type        = "SecureString"
-  key_id      = var.kms_ssm_key_arn
-  overwrite   = var.overwrite_ssm_parameter
-  tags        = module.this.tags
-}
-
-resource "aws_ssm_parameter" "mq_application_username" {
-  count       = local.enabled ? 1 : 0
-  name        = format(var.ssm_parameter_name_format, var.ssm_path, var.mq_application_user_ssm_parameter_name)
-  value       = local.mq_application_user
-  description = "AMQ username for the application user"
-  type        = "String"
-  overwrite   = var.overwrite_ssm_parameter
-  tags        = module.this.tags
-}
-
-resource "aws_ssm_parameter" "mq_application_password" {
-  count       = local.enabled ? 1 : 0
-  name        = format(var.ssm_parameter_name_format, var.ssm_path, var.mq_application_password_ssm_parameter_name)
-  value       = local.mq_application_password
-  description = "AMQ password for the application user"
   type        = "SecureString"
   key_id      = var.kms_ssm_key_arn
   overwrite   = var.overwrite_ssm_parameter
@@ -120,10 +81,5 @@ resource "aws_mq_broker" "default" {
       groups         = ["admin"]
       console_access = true
     }
-  }
-
-  user {
-    username = local.mq_application_user
-    password = local.mq_application_password
   }
 }
