@@ -187,3 +187,14 @@ variable "security_groups" {
   type        = list(string)
   description = "List of Security Groups"
 }
+
+variable "allowed_security_groups" {
+  type    = list(string)
+  default = []
+}
+
+
+variable "allowed_cidr_blocks" {
+  type    = list(string)
+  default = []
+}
