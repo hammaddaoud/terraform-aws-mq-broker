@@ -87,18 +87,3 @@ output "application_username" {
   value       = local.mq_application_user
   description = "AmazonMQ application username"
 }
-
-output "security_group_id" {
-  value       = module.security_group.id
-  description = "The ID of the created security group"
-}
-
-output "security_group_arn" {
-  value       = module.security_group.arn
-  description = "The ARN of the created security group"
-}
-
-output "security_group_name" {
-  value       = module.security_group.name
-  description = "The name of the created security group"
-}
