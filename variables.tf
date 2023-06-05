@@ -83,6 +83,19 @@ variable "mq_admin_password" {
   sensitive   = true
 }
 
+variable "mq_application_user" {
+  type        = list(string)
+  description = "Application username"
+  default     = []
+}
+
+variable "mq_application_password" {
+  type        = list(string)
+  description = "Application password"
+  default     = []
+  sensitive   = true
+}
+
 variable "vpc_id" {
   type        = string
   description = "The ID of the VPC to create the broker in"
@@ -121,6 +134,18 @@ variable "mq_admin_password_ssm_parameter_name" {
   type        = string
   description = "SSM parameter name for Admin password"
   default     = "mq_admin_password"
+}
+
+variable "mq_application_user_ssm_parameter_name" {
+  type        = string
+  description = "SSM parameter name for Application username"
+  default     = "mq_application_username"
+}
+
+variable "mq_application_password_ssm_parameter_name" {
+  type        = string
+  description = "SSM parameter name for Application password"
+  default     = "mq_application_password"
 }
 
 variable "kms_ssm_key_arn" {
