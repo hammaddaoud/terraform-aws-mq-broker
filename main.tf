@@ -96,6 +96,8 @@ resource "aws_mq_broker" "default" {
   subnet_ids                 = var.subnet_ids
   tags                       = module.this.tags
 
+  security_groups            = var.security_groups
+    
   dynamic "encryption_options" {
     for_each = var.encryption_enabled ? ["true"] : []
     content {
