@@ -15,7 +15,6 @@ locals {
   mq_application_password_needed = local.enabled && length(var.mq_application_password) == 0
   mq_application_password        = local.mq_application_password_needed ? random_password.mq_application_password[0].result : try(var.mq_application_password[0], "")
 
-  mq_logs = { logs = { "general_log_enabled" : var.general_log_enabled, "audit_log_enabled" : var.audit_log_enabled } }
 
 }
 
@@ -106,18 +105,6 @@ resource "aws_mq_broker" "default" {
     }
   }
 
-  # NOTE: Omit logs block if both general and audit logs disabled:
-  # https://github.com/hashicorp/terraform-provider-aws/issues/18067
-  dynamic "logs" {
-    for_each = {
-      for logs, type in local.mq_logs : logs => type
-      if type.general_log_enabled || type.audit_log_enabled
-    }
-    content {
-      general = logs.value["general_log_enabled"]
-      audit   = logs.value["audit_log_enabled"]
-    }
-  }
 
   maintenance_window_start_time {
     day_of_week = var.maintenance_day_of_week
