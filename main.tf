@@ -17,7 +17,6 @@ locals {
 
   mq_logs = { logs = { "general_log_enabled" : var.general_log_enabled, "audit_log_enabled" : var.audit_log_enabled } }
 
-  broker_security_groups = try(sort(compact(concat([module.security_group.id], local.additional_security_group_ids))), [])
 }
 
 resource "random_pet" "mq_admin_user" {
@@ -98,8 +97,6 @@ resource "aws_mq_broker" "default" {
   publicly_accessible        = var.publicly_accessible
   subnet_ids                 = var.subnet_ids
   tags                       = module.this.tags
-
-  security_groups = local.broker_security_groups
 
   dynamic "encryption_options" {
     for_each = var.encryption_enabled ? ["true"] : []
