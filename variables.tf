@@ -181,3 +181,9 @@ variable "allowed_ingress_ports" {
     EOT
   default     = []
 }
+
+
+variable "security_groups" {
+  type        = list(string)
+  description = "List of Security Groups"
+}
