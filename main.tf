@@ -1,7 +1,6 @@
 locals {
-  enabled = module.this.enabled
 
-  mq_admin_user_enabled = local.enabled && var.engine_type == "ActiveMQ"
+  mq_admin_user_enabled = var.engine_type == "ActiveMQ"
 
   mq_admin_user_needed = local.mq_admin_user_enabled && length(var.mq_admin_user) == 0
   mq_admin_user        = local.mq_admin_user_needed ? random_pet.mq_admin_user[0].id : try(var.mq_admin_user[0], "")
@@ -9,10 +8,10 @@ locals {
   mq_admin_password_needed = local.mq_admin_user_enabled && length(var.mq_admin_password) == 0
   mq_admin_password        = local.mq_admin_password_needed ? random_password.mq_admin_password[0].result : try(var.mq_admin_password[0], "")
 
-  mq_application_user_needed = local.enabled && length(var.mq_application_user) == 0
+  mq_application_user_needed = length(var.mq_application_user) == 0
   mq_application_user        = local.mq_application_user_needed ? random_pet.mq_application_user[0].id : try(var.mq_application_user[0], "")
 
-  mq_application_password_needed = local.enabled && length(var.mq_application_password) == 0
+  mq_application_password_needed = length(var.mq_application_password) == 0
   mq_application_password        = local.mq_application_password_needed ? random_password.mq_application_password[0].result : try(var.mq_application_password[0], "")
 
 }
@@ -63,7 +62,6 @@ resource "aws_ssm_parameter" "mq_master_password" {
 }
 
 resource "aws_ssm_parameter" "mq_application_username" {
-  count       = local.enabled ? 1 : 0
   name        = format(var.ssm_parameter_name_format, var.ssm_path, var.mq_application_user_ssm_parameter_name)
   value       = local.mq_application_user
   description = "AMQ username for the application user"
@@ -73,7 +71,6 @@ resource "aws_ssm_parameter" "mq_application_username" {
 }
 
 resource "aws_ssm_parameter" "mq_application_password" {
-  count       = local.enabled ? 1 : 0
   name        = format(var.ssm_parameter_name_format, var.ssm_path, var.mq_application_password_ssm_parameter_name)
   value       = local.mq_application_password
   description = "AMQ password for the application user"
@@ -112,7 +109,6 @@ resource "aws_security_group" "mq_broker" {
   
   
 resource "aws_mq_broker" "default" {
-  count                      = local.enabled ? 1 : 0
   broker_name                = module.this.id
   deployment_mode            = var.deployment_mode
   engine_type                = var.engine_type
